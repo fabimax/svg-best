@@ -269,10 +269,16 @@ export const buildElementColorMap = (svgString) => {
     gradients.forEach(grad => {
       const id = grad.getAttribute('id');
       if (id) {
+        console.log(`[GRADIENT DEBUG] Processing gradient: ${id}`);
+        console.log(`[GRADIENT DEBUG] Gradient element:`, grad);
+        
         let stops = [];
         
         // First try to get stops directly from this gradient
-        grad.querySelectorAll('stop').forEach(stop => {
+        const stopElements = grad.querySelectorAll('stop');
+        console.log(`[GRADIENT DEBUG] Found ${stopElements.length} stop elements`);
+        
+        stopElements.forEach(stop => {
           let stopColor = stop.getAttribute('stop-color');
           let stopOpacity = stop.getAttribute('stop-opacity');
           
@@ -287,11 +293,14 @@ export const buildElementColorMap = (svgString) => {
             if (opacityMatch) stopOpacity = opacityMatch[1].trim();
           }
           
-          stops.push({
+          const stopData = {
             offset: stop.getAttribute('offset') || '0%',
             color: stopColor || '#000000',
             opacity: stopOpacity || '1'
-          });
+          };
+          
+          console.log(`[GRADIENT DEBUG] Stop data:`, stopData);
+          stops.push(stopData);
         });
         
         // If no stops found, check for xlink:href reference
