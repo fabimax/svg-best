@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model SystemIcon {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  category    String?
+  svgContent  String   @db.Text
+  description String?
+  tags        String[]
+  downloads   Int      @default(0)
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Phase 2: Analytics tracking
+model UsageEvent {
+  id        String   @id @default(cuid())
+  event     String   // 'icon_view', 'icon_download', 'svg_upload', 'color_change', 'export'
+  iconId    String?
+  metadata  Json?    // Additional event data
+  sessionId String?  // Track events per session
+  createdAt DateTime @default(now())
+}
+
+// Phase 2: Color palette sharing
+model ColorPalette {
+  id        String   @id @default(cuid())
+  name      String
+  colors    String[] // Array of hex colors
+  public    Boolean  @default(true)
+  downloads Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
