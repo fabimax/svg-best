@@ -10,12 +10,9 @@ function SystemIconLibrary({ onIconSelect }) {
   const [icons, setIcons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     loadIcons();
-    loadCategories();
   }, []);
 
   const loadIcons = async () => {
@@ -58,20 +55,11 @@ function SystemIconLibrary({ onIconSelect }) {
     }
   };
 
-  const loadCategories = async () => {
-    try {
-      const cats = await systemIconService.getCategories();
-      setCategories(cats || ['Symbols', 'Basic Shapes', 'Awards']);
-    } catch (error) {
-      setCategories(['Symbols', 'Basic Shapes', 'Awards']);
-    }
-  };
 
   const filteredIcons = icons.filter(icon => {
     const matchesSearch = icon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          icon.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !selectedCategory || icon.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    return matchesSearch;
   });
 
   return (
@@ -92,16 +80,6 @@ function SystemIconLibrary({ onIconSelect }) {
           />
         </div>
 
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="category-filter"
-        >
-          <option value="">All Categories</option>
-          {categories.map(category => (
-            <option key={category} value={category}>{category}</option>
-          ))}
-        </select>
       </div>
 
       {loading ? (
@@ -123,7 +101,6 @@ function SystemIconLibrary({ onIconSelect }) {
                 />
                 <div className="icon-info">
                   <h4>{icon.name}</h4>
-                  <p>{icon.category}</p>
                 </div>
               </div>
             ))
