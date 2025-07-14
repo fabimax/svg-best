@@ -1608,23 +1608,27 @@ const SvgColorCustomization = ({
     Object.keys(updatedGradientDefinitions).forEach(gradientId => {
       const gradient = updatedGradientDefinitions[gradientId];
       if (gradient) {
-        gradient.stops = gradient.stops.map((stop) => {
-          // First apply HSL adjustments
-          const adjustedColor = adjustColorHsl(
-            stop.color,    // Use current stop color, not original
-            deltaHue,      // Apply only the delta change
-            deltaSat, 
-            deltaLight
-          );
-          // Then apply alpha adjustment if needed
-          if (deltaAlpha !== 0) {
-            const { hex, alpha } = parseColorString(adjustedColor);
-            const newAlpha = Math.max(0, Math.min(1, alpha + (deltaAlpha / 100)));
-            return { ...stop, color: formatHexWithAlpha(hex, newAlpha) };
-          } else {
-            return { ...stop, color: adjustedColor };
-          }
-        });
+        // Create a deep copy of the gradient to avoid modifying the original
+        updatedGradientDefinitions[gradientId] = {
+          ...gradient,
+          stops: gradient.stops.map((stop) => {
+            // First apply HSL adjustments
+            const adjustedColor = adjustColorHsl(
+              stop.color,    // Use current stop color, not original
+              deltaHue,      // Apply only the delta change
+              deltaSat, 
+              deltaLight
+            );
+            // Then apply alpha adjustment if needed
+            if (deltaAlpha !== 0) {
+              const { hex, alpha } = parseColorString(adjustedColor);
+              const newAlpha = Math.max(0, Math.min(1, alpha + (deltaAlpha / 100)));
+              return { ...stop, color: formatHexWithAlpha(hex, newAlpha) };
+            } else {
+              return { ...stop, color: adjustedColor };
+            }
+          })
+        };
       }
     });
 
@@ -2972,13 +2976,17 @@ const SvgColorCustomization = ({
                                     const updatedGradientDefinitions = { ...gradientDefinitions };
                                     const originalGradient = originalGradientDefinitions[slot.gradientId];
                                     if (updatedGradientDefinitions[slot.gradientId] && originalGradient) {
-                                      const originalStopColor = originalGradient.stops[slot.stopIndex]?.color || slot.originalColor;
+                                      // Reset the entire gradient to original colors, not just one stop
                                       updatedGradientDefinitions[slot.gradientId] = {
                                         ...updatedGradientDefinitions[slot.gradientId],
-                                        stops: updatedGradientDefinitions[slot.gradientId].stops.map((stop, idx) =>
-                                          idx === slot.stopIndex ? { ...stop, color: originalStopColor } : stop
-                                        )
+                                        stops: originalGradient.stops.map(originalStop => ({ ...originalStop }))
                                       };
+                                      
+                                      // Reset gradient adjustments state (for the popup sliders)
+                                      setGradientAdjustments(prev => ({
+                                        ...prev,
+                                        [slot.gradientId]: { hue: 0, saturation: 0, lightness: 0, alpha: 0 }
+                                      }));
                                     }
                                     onColorChange(elementColorMap, updatedGradientDefinitions);
                                   }

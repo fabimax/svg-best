@@ -141,6 +141,7 @@ function SvgEditor({ svgData, onBack }) {
               <SvgDisplay 
                 svgContent={currentSvg}
                 alt={svgData.name}
+                size={500}
                 previewState={previewState}
                 colorData={{
                   elementColorMap: elementColorMap,
