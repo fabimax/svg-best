@@ -8,7 +8,6 @@ import './SvgEditor.css';
 
 function SvgEditor({ svgData, onBack }) {
   const [currentSvg, setCurrentSvg] = useState(svgData.svgContent);
-  const [showColorPanel, setShowColorPanel] = useState(true);
   
   // Color analysis state
   const [elementColorMap, setElementColorMap] = useState(null);
@@ -134,27 +133,18 @@ function SvgEditor({ svgData, onBack }) {
       </div>
 
       <div className="editor-content">
-        <div className="svg-preview-panel">
-          <div className="preview-container">
-            <h3>Preview</h3>
-            <div className="svg-preview">
-              <SvgDisplay 
-                svgContent={currentSvg}
-                alt={svgData.name}
-                size={500}
-                previewState={previewState}
-                colorData={{
-                  elementColorMap: elementColorMap,
-                  gradientDefinitions: gradientDefinitions
-                }}
-              />
-            </div>
-            
-            <div className="preview-info">
-              <p><strong>Source:</strong> {svgData.source === 'upload' ? 'Uploaded file' : 'System icon'}</p>
-              {svgData.category && <p><strong>Category:</strong> {svgData.category}</p>}
-            </div>
-          </div>
+        <div className="svg-preview">
+          <h3>Preview</h3>
+          <SvgDisplay 
+            svgContent={currentSvg}
+            alt={svgData.name}
+            className="responsive-svg"
+            previewState={previewState}
+            colorData={{
+              elementColorMap: elementColorMap,
+              gradientDefinitions: gradientDefinitions
+            }}
+          />
         </div>
 
         <div className="color-panel">
@@ -163,37 +153,29 @@ function SvgEditor({ svgData, onBack }) {
               <Palette size={20} />
               Color Customization
             </h3>
-            <button 
-              onClick={() => setShowColorPanel(!showColorPanel)}
-              className="toggle-panel"
-            >
-              {showColorPanel ? 'Hide' : 'Show'}
-            </button>
           </div>
 
-          {showColorPanel && (
-            <div className="color-controls">
-              {colorAnalysisLoading ? (
-                <div className="loading-colors">
-                  <p>Analyzing SVG colors...</p>
-                </div>
-              ) : elementColorMap && Object.keys(elementColorMap).length > 0 ? (
-                <SvgColorCustomization
-                  title="SVG Color Customization"
-                  elementColorMap={elementColorMap}
-                  gradientDefinitions={gradientDefinitions}
-                  originalGradientDefinitions={originalGradientDefinitions}
-                  onColorChange={handleColorChange}
-                  onPreviewStateChange={handlePreviewStateChange}
-                />
-              ) : (
-                <div className="no-colors">
-                  <h4>No Editable Colors Found</h4>
-                  <p>This SVG doesn't contain any colors that can be customized. Try uploading a different SVG with fill or stroke colors.</p>
-                </div>
-              )}
-            </div>
-          )}
+          <div className="color-controls">
+            {colorAnalysisLoading ? (
+              <div className="loading-colors">
+                <p>Analyzing SVG colors...</p>
+              </div>
+            ) : elementColorMap && Object.keys(elementColorMap).length > 0 ? (
+              <SvgColorCustomization
+                title="SVG Color Customization"
+                elementColorMap={elementColorMap}
+                gradientDefinitions={gradientDefinitions}
+                originalGradientDefinitions={originalGradientDefinitions}
+                onColorChange={handleColorChange}
+                onPreviewStateChange={handlePreviewStateChange}
+              />
+            ) : (
+              <div className="no-colors">
+                <h4>No Editable Colors Found</h4>
+                <p>This SVG doesn't contain any colors that can be customized. Try uploading a different SVG with fill or stroke colors.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
