@@ -112,7 +112,7 @@ const TiledGroupColorPicker = ({ displayItems, onColorChange, groupId, onPreview
                 style={{ 
                   flex: 1,
                   backgroundColor: item.value,
-                  minWidth: '8px'
+                  minWidth: '2px'
                 }}
               />
             );
