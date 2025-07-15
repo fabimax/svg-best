@@ -1,27 +1,29 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Upload, Palette, Download, Github, Heart } from 'lucide-react';
 import SystemIconLibrary from '../components/SystemIconLibrary';
 import SvgUploader from '../components/SvgUploader';
-import SvgEditor from '../components/SvgEditor';
 import './HomePage.css';
 
 function HomePage() {
-  const [currentSvg, setCurrentSvg] = useState(null);
+  const navigate = useNavigate();
 
   const handleSvgSelect = (svgData) => {
-    setCurrentSvg(svgData);
+    // Navigate to editor with SVG data
+    navigate('/editor', { state: { svgData } });
   };
 
   const handleSvgUpload = (svgContent, fileName) => {
-    setCurrentSvg({
-      name: fileName || 'Uploaded SVG',
-      svgContent: svgContent,
-      source: 'upload'
+    // Navigate to editor with uploaded SVG
+    navigate('/editor', { 
+      state: { 
+        svgData: {
+          name: fileName || 'Uploaded SVG',
+          svgContent: svgContent,
+          source: 'upload'
+        }
+      }
     });
-  };
-
-  const handleBackToLibrary = () => {
-    setCurrentSvg(null);
   };
 
   return (
@@ -53,31 +55,24 @@ function HomePage() {
 
       {/* Main editor interface */}
       <main className="editor-interface">
-        {!currentSvg ? (
-          <div className="svg-source-selector">
-            <div className="selector-header">
-              <h2>Choose an Image or Upload Your Own</h2>
-              <p>Start editing SVG colors immediately - no sign up required</p>
+        <div className="svg-source-selector">
+          <div className="selector-header">
+            <h2>Choose an Image or Upload Your Own</h2>
+            <p>Start editing SVG colors immediately - no sign up required</p>
+          </div>
+
+          <div className="unified-content">
+            {/* Upload section at the top */}
+            <div className="upload-section">
+              <SvgUploader onSvgUpload={handleSvgUpload} />
             </div>
 
-            <div className="unified-content">
-              {/* Upload section at the top */}
-              <div className="upload-section">
-                <SvgUploader onSvgUpload={handleSvgUpload} />
-              </div>
-
-              {/* Icon library section */}
-              <div className="library-section">
-                <SystemIconLibrary onIconSelect={handleSvgSelect} />
-              </div>
+            {/* Icon library section */}
+            <div className="library-section">
+              <SystemIconLibrary onIconSelect={handleSvgSelect} />
             </div>
           </div>
-        ) : (
-          <SvgEditor 
-            svgData={currentSvg} 
-            onBack={handleBackToLibrary}
-          />
-        )}
+        </div>
       </main>
 
       {/* Minimal footer */}

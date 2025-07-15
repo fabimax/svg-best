@@ -439,7 +439,7 @@ export const generatedIconSeedData: Omit<SystemIcon, 'id' | 'createdAt' | 'updat
     tags: ["egg"],
     downloads: 0,
     featured: false,
-  },
+  },/*
   {
     name: 'Eggplant Gradient',
     category: 'Icons',
@@ -457,7 +457,7 @@ export const generatedIconSeedData: Omit<SystemIcon, 'id' | 'createdAt' | 'updat
     tags: ["eggplant"],
     downloads: 0,
     featured: false,
-  },
+  },*/
   {
     name: 'Eye',
     category: 'Icons',

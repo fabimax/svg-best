@@ -2010,6 +2010,30 @@ const SvgColorCustomization = ({
     return finalCSS;
   };
 
+  // Helper function to convert auto group slots to displayItems format for TiledGroupColorPicker
+  const getAutoGroupDisplayItems = (slots) => {
+    const colorCounts = {};
+    
+    // Count occurrences of each current color
+    slots.forEach(slot => {
+      const currentColor = slot.currentColor;
+      if (currentColor) {
+        colorCounts[currentColor] = (colorCounts[currentColor] || 0) + 1;
+      }
+    });
+    
+    // Convert to displayItems format, showing each color proportionally
+    const displayItems = [];
+    Object.entries(colorCounts).forEach(([color, count]) => {
+      const parsed = parseColorString(color);
+      for (let i = 0; i < count; i++) {
+        displayItems.push({ type: 'color', value: parsed.hex });
+      }
+    });
+    
+    return displayItems.length > 0 ? displayItems : [{ type: 'color', value: '#000000' }];
+  };
+
   // Helper function to render a color group (used for both solid colors and gradients)
   const renderColorGroup = (originalColor, slots, isGradient = false, gradientGroup = null) => {
     // Handle special unspecified group
@@ -2085,14 +2109,16 @@ const SvgColorCustomization = ({
           
           {/* Color picker - only for solid colors */}
           {!isGradient && (
-            <ColorPickerWrapper
-              value={currentHex}
-              onChange={(e) => handleGroupColorChange(originalColor, e.target.value, currentAlpha || 1, isGradient)}
-              onMouseEnter={() => handlePreviewStart(`group-${originalColor}`, 'hover')}
-              onMouseLeave={() => handlePreviewEnd()}
-              onClick={() => handlePulseAnimation(`group-${originalColor}`)}
+            <TiledGroupColorPicker
+              displayItems={getAutoGroupDisplayItems(slots)}
+              onColorChange={(color) => handleGroupColorChange(originalColor, color, currentAlpha || 1, isGradient)}
+              groupId={`auto-${originalColor}`}
+              onPreviewStart={() => handlePreviewStart(`group-${originalColor}`, 'hover')}
+              onPreviewEnd={() => handlePreviewEnd()}
+              onPreviewPulse={() => handlePulseAnimation(`group-${originalColor}`)}
               style={{ 
-                opacity: allSameColor ? 1 : 0.7
+                width: '32px',
+                height: '24px'
               }}
             />
           )}
