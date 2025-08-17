@@ -33,7 +33,7 @@ function HomePage() {
         <div className="header-content">
           <div className="logo-section">
             <h1>svg.best</h1>
-            <p>The best online SVG editor</p>
+            <p>The best online SVG color editor</p>
           </div>
           
           <div className="header-features">
