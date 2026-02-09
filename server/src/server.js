@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import compression from 'compression';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
@@ -21,6 +22,7 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(helmet());
 app.use(cors());
+app.use(compression());
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' })); // Higher limit for SVG content
 app.use(express.urlencoded({ extended: true }));

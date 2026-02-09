@@ -6,7 +6,7 @@ export const getSystemIcons = async (req, res, next) => {
     
     const icons = await systemIconService.findAll({
       category,
-      featured: featured === 'true',
+      featured: featured !== undefined ? featured === 'true' : undefined,
       limit: limit ? parseInt(limit) : 50,
       offset: offset ? parseInt(offset) : 0
     });

@@ -114,6 +114,17 @@ DATABASE_URL=postgresql://svgbestuser:PASSWORD@localhost:5432/svgbest?schema=pub
 - **Restart**: `pm2 restart svg-best-server`
 - **Stop**: `pm2 stop svg-best-server`
 
+#### Auto-start on boot
+
+PM2 is configured to auto-start on VPS reboot via `pm2 save` and `pm2 startup`. If you ever re-register the process (e.g. after deleting and re-adding it), run these again:
+
+```bash
+pm2 save       # Saves current process list
+pm2 startup    # Run the command it outputs to enable auto-start on boot
+```
+
+**Note**: The Feb 2026 outage was caused by a VPS reboot before auto-start was configured — PM2 came up with an empty process list, so the backend wasn't running and nginx returned 502.
+
 ### Database Access
 
 ```bash
@@ -133,10 +144,11 @@ certbot renew --dry-run
 
 ### Troubleshooting
 
-1. **TypeScript seed issues**: Use the manual compilation workaround above
-2. **Database permissions**: User `svgbestuser` should own the `svgbest` database
-3. **nginx not serving**: Check if site is enabled in `/etc/nginx/sites-enabled/`
-4. **PM2 not starting**: Check if server code compiles with `node src/server.js`
+1. **502 Bad Gateway**: Check `pm2 status` — the backend is likely not running. See "Auto-start on boot" above.
+2. **TypeScript seed issues**: Use the manual compilation workaround above
+3. **Database permissions**: User `svgbestuser` should own the `svgbest` database
+4. **nginx not serving**: Check if site is enabled in `/etc/nginx/sites-enabled/`
+5. **PM2 not starting**: Check if server code compiles with `node src/server.js`
 
 ### Recommended Improvements
 
