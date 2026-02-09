@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Download, Palette, RotateCcw } from 'lucide-react';
 import SvgDisplay from './SvgDisplay';
 import SvgColorCustomization from './SvgColorCustomization';
@@ -17,6 +17,22 @@ function SvgEditor({ svgData, onBack }) {
   
   // Preview state for highlighting effects
   const [previewState, setPreviewState] = useState(null);
+
+  // Sticky detection
+  const [isSticky, setIsSticky] = useState(false);
+  const sentinelRef = useRef(null);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsSticky(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     console.log('[SvgEditor] svgData:', svgData);
@@ -133,7 +149,8 @@ function SvgEditor({ svgData, onBack }) {
       </div>
 
       <div className="editor-content">
-        <div className="svg-preview">
+        <div ref={sentinelRef} className="sticky-sentinel" />
+        <div className={`svg-preview${isSticky ? ' svg-preview--compact' : ''}`}>
           <h3>Preview</h3>
           <SvgDisplay 
             svgContent={currentSvg}
