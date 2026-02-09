@@ -26,20 +26,14 @@ function SvgEditor({ svgData, onBack }) {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
 
-    // Defer observer setup by a frame so any scroll resets from
-    // SPA navigation (EditorPage's scrollTo) have settled first
-    const rafId = requestAnimationFrame(() => {
-      const observer = new IntersectionObserver(
-        ([entry]) => setIsSticky(!entry.isIntersecting),
-        { threshold: 0, rootMargin: '-100px 0px 0px 0px' }
-      );
-      observer.observe(sentinel);
-      sentinel._observer = observer;
-    });
-    return () => {
-      cancelAnimationFrame(rafId);
-      sentinel._observer?.disconnect();
+    const handleScroll = () => {
+      const rect = sentinel.getBoundingClientRect();
+      setIsSticky(rect.bottom < -100);
     };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
