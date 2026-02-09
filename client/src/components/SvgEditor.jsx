@@ -28,7 +28,7 @@ function SvgEditor({ svgData, onBack }) {
 
     const observer = new IntersectionObserver(
       ([entry]) => setIsSticky(!entry.isIntersecting),
-      { threshold: 0 }
+      { threshold: 0, rootMargin: '-100px 0px 0px 0px' }
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
