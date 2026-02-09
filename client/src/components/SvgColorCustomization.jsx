@@ -3609,63 +3609,49 @@ const SvgColorCustomization = ({
           <h4 style={{ margin: '0', color: '#495057', fontSize: '1em' }}>Global Adjustments</h4>
         </div>
         
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '15px', alignItems: 'center' }}>
+        <div className="adjustment-sliders-grid">
           {/* Hue Control */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <label style={{ fontSize: '0.85em', fontWeight: '500', color: '#495057' }}>
-                Hue: {globalAdjustments.hue}°
-              </label>
-              <button
-                type="button"
-                onClick={() => {
-                  // Only reset hue (no clamping issues with hue)
-                  const deltaHue = 0 - globalAdjustments.hue;
-                  
-                  // Update state to reset only hue
-                  setGlobalAdjustments(prev => ({ ...prev, hue: 0 }));
-                  
-                  // Apply the hue reset delta
-                  const updatedElementColorMap = { ...elementColorMap };
-                  Object.keys(updatedElementColorMap).forEach(path => {
-                    const element = updatedElementColorMap[path];
-                    if (element.fill && !element.fill.isGradient) {
-                      const adjustedColor = adjustColorHsl(element.fill.current, deltaHue, 0, 0);
-                      element.fill.current = adjustedColor;
-                    }
-                    if (element.stroke && !element.stroke.isGradient) {
-                      const adjustedColor = adjustColorHsl(element.stroke.current, deltaHue, 0, 0);
-                      element.stroke.current = adjustedColor;
-                    }
-                  });
-                  
-                  const updatedGradientDefinitions = { ...gradientDefinitions };
-                  Object.keys(updatedGradientDefinitions).forEach(gradientId => {
-                    const gradient = updatedGradientDefinitions[gradientId];
-                    if (gradient) {
-                      gradient.stops = gradient.stops.map((stop) => {
-                        const adjustedColor = adjustColorHsl(stop.color, deltaHue, 0, 0);
-                        return { ...stop, color: adjustedColor };
-                      });
-                    }
-                  });
-                  
-                  onColorChange(updatedElementColorMap, updatedGradientDefinitions);
-                }}
-                style={{
-                  fontSize: '10px',
-                  padding: '2px 6px',
-                  background: 'transparent',
-                  border: '1px solid #ccc',
-                  borderRadius: '3px',
-                  cursor: 'pointer',
-                  color: '#666'
-                }}
-                title="Reset hue"
-              >
-                ↻
-              </button>
-            </div>
+          <div className="adjustment-slider">
+            <label className="adjustment-slider-label">
+              <span className="adjustment-slider-name-area">
+                Hue
+                <button
+                  type="button"
+                  className="adjustment-slider-reset"
+                  onClick={() => {
+                    const deltaHue = 0 - globalAdjustments.hue;
+                    setGlobalAdjustments(prev => ({ ...prev, hue: 0 }));
+                    const updatedElementColorMap = { ...elementColorMap };
+                    Object.keys(updatedElementColorMap).forEach(path => {
+                      const element = updatedElementColorMap[path];
+                      if (element.fill && !element.fill.isGradient) {
+                        const adjustedColor = adjustColorHsl(element.fill.current, deltaHue, 0, 0);
+                        element.fill.current = adjustedColor;
+                      }
+                      if (element.stroke && !element.stroke.isGradient) {
+                        const adjustedColor = adjustColorHsl(element.stroke.current, deltaHue, 0, 0);
+                        element.stroke.current = adjustedColor;
+                      }
+                    });
+                    const updatedGradientDefinitions = { ...gradientDefinitions };
+                    Object.keys(updatedGradientDefinitions).forEach(gradientId => {
+                      const gradient = updatedGradientDefinitions[gradientId];
+                      if (gradient) {
+                        gradient.stops = gradient.stops.map((stop) => {
+                          const adjustedColor = adjustColorHsl(stop.color, deltaHue, 0, 0);
+                          return { ...stop, color: adjustedColor };
+                        });
+                      }
+                    });
+                    onColorChange(updatedElementColorMap, updatedGradientDefinitions);
+                  }}
+                  title="Reset hue"
+                >
+                  ↻
+                </button>
+              </span>
+              <span className="adjustment-slider-value">{globalAdjustments.hue}°</span>
+            </label>
             <input
               type="range"
               min="-180"
@@ -3676,11 +3662,12 @@ const SvgColorCustomization = ({
               style={{ width: '100%' }}
             />
           </div>
-          
+
           {/* Saturation Control */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label style={{ fontSize: '0.85em', fontWeight: '500', color: '#495057' }}>
-              Saturation: {globalAdjustments.saturation > 0 ? '+' : ''}{globalAdjustments.saturation}%
+          <div className="adjustment-slider">
+            <label className="adjustment-slider-label">
+              <span className="adjustment-slider-name-area">Saturation</span>
+              <span className="adjustment-slider-value">{globalAdjustments.saturation > 0 ? '+' : ''}{globalAdjustments.saturation}%</span>
             </label>
             <input
               type="range"
@@ -3692,11 +3679,12 @@ const SvgColorCustomization = ({
               style={{ width: '100%' }}
             />
           </div>
-          
+
           {/* Lightness Control */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label style={{ fontSize: '0.85em', fontWeight: '500', color: '#495057' }}>
-              Lightness: {globalAdjustments.lightness > 0 ? '+' : ''}{globalAdjustments.lightness}%
+          <div className="adjustment-slider">
+            <label className="adjustment-slider-label">
+              <span className="adjustment-slider-name-area">Lightness</span>
+              <span className="adjustment-slider-value">{globalAdjustments.lightness > 0 ? '+' : ''}{globalAdjustments.lightness}%</span>
             </label>
             <input
               type="range"
@@ -3708,11 +3696,12 @@ const SvgColorCustomization = ({
               style={{ width: '100%' }}
             />
           </div>
-          
+
           {/* Alpha Control */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label style={{ fontSize: '0.85em', fontWeight: '500', color: '#495057' }}>
-              Alpha: {globalAdjustments.alpha > 0 ? '+' : ''}{globalAdjustments.alpha}%
+          <div className="adjustment-slider">
+            <label className="adjustment-slider-label">
+              <span className="adjustment-slider-name-area">Alpha</span>
+              <span className="adjustment-slider-value">{globalAdjustments.alpha > 0 ? '+' : ''}{globalAdjustments.alpha}%</span>
             </label>
             <input
               type="range"
@@ -3722,7 +3711,7 @@ const SvgColorCustomization = ({
               value={globalAdjustments.alpha}
               onChange={(e) => handleGlobalAdjustment('alpha', e.target.value)}
               className="transparency-slider"
-              style={{ 
+              style={{
                 width: '100%',
                 height: '8px',
                 appearance: 'none',
@@ -3877,11 +3866,12 @@ const SvgColorCustomization = ({
               </div>
               
               {/* Group adjustment sliders */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '15px', alignItems: 'center', marginBottom: '10px' }}>
+              <div className="adjustment-sliders-grid" style={{ marginBottom: '10px' }}>
                 {/* Hue Control */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.85em', fontWeight: '500', color: '#495057' }}>
-                    Hue: {adjustments.hue}°
+                <div className="adjustment-slider">
+                  <label className="adjustment-slider-label">
+                    <span className="adjustment-slider-name-area">Hue</span>
+                    <span className="adjustment-slider-value">{adjustments.hue}°</span>
                   </label>
                   <input
                     type="range"
@@ -3896,11 +3886,12 @@ const SvgColorCustomization = ({
                     style={{ width: '100%' }}
                   />
                 </div>
-                
+
                 {/* Saturation Control */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.85em', fontWeight: '500', color: '#495057' }}>
-                    Saturation: {adjustments.saturation > 0 ? '+' : ''}{adjustments.saturation}%
+                <div className="adjustment-slider">
+                  <label className="adjustment-slider-label">
+                    <span className="adjustment-slider-name-area">Saturation</span>
+                    <span className="adjustment-slider-value">{adjustments.saturation > 0 ? '+' : ''}{adjustments.saturation}%</span>
                   </label>
                   <input
                     type="range"
@@ -3915,11 +3906,12 @@ const SvgColorCustomization = ({
                     style={{ width: '100%' }}
                   />
                 </div>
-                
+
                 {/* Lightness Control */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.85em', fontWeight: '500', color: '#495057' }}>
-                    Lightness: {adjustments.lightness > 0 ? '+' : ''}{adjustments.lightness}%
+                <div className="adjustment-slider">
+                  <label className="adjustment-slider-label">
+                    <span className="adjustment-slider-name-area">Lightness</span>
+                    <span className="adjustment-slider-value">{adjustments.lightness > 0 ? '+' : ''}{adjustments.lightness}%</span>
                   </label>
                   <input
                     type="range"
@@ -3934,11 +3926,12 @@ const SvgColorCustomization = ({
                     style={{ width: '100%' }}
                   />
                 </div>
-                
+
                 {/* Alpha Control */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.85em', fontWeight: '500', color: '#495057' }}>
-                    Alpha: {adjustments.alpha > 0 ? '+' : ''}{adjustments.alpha}%
+                <div className="adjustment-slider">
+                  <label className="adjustment-slider-label">
+                    <span className="adjustment-slider-name-area">Alpha</span>
+                    <span className="adjustment-slider-value">{adjustments.alpha > 0 ? '+' : ''}{adjustments.alpha}%</span>
                   </label>
                   <input
                     type="range"
@@ -3951,7 +3944,7 @@ const SvgColorCustomization = ({
                       handleGroupAdjustment(groupId, 'alpha', newAlpha);
                     }}
                     className="transparency-slider"
-                    style={{ 
+                    style={{
                       width: '100%',
                       height: '8px',
                       appearance: 'none',
