@@ -27,10 +27,10 @@ function SvgEditor({ svgData, onBack }) {
     if (!sentinel) return;
 
     const handleScroll = () => {
-      const rect = sentinel.getBoundingClientRect();
+      const scrollY = window.scrollY;
       setIsSticky(prev => {
-        if (prev) return rect.bottom < -20;   // stay compact until sentinel is almost back in view
-        return rect.bottom < -100;             // only shrink after scrolling well past
+        if (prev) return scrollY > 50;    // stay compact until near the very top
+        return scrollY > 150;              // only shrink after scrolling 150px down
       });
     };
 
